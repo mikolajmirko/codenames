@@ -641,11 +641,11 @@ export default {
     }
   },
   watch: {
-    name: function (val) {
+    name: function(val) {
       this.nameError = false;
       localStorage.name = val;
     },
-    roomCode: function (val) {
+    roomCode: function(val) {
       this.roomCodeError = false;
     },
   },

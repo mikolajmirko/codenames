@@ -86,16 +86,34 @@ export default {
     };
   },
   created() {
+    this.recalculateViewport();
     window.addEventListener("resize", this.windowResized);
+    document.addEventListener("backbutton",this.onBackButton);
   },
   destroyed() {
     window.removeEventListener("resize", this.windowResized);
+    document.removeEventListener("backbutton", this.onBackButton);
   },
   methods: {
+    recalculateViewport() {
+      // Mobile viewport fix
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    },
     windowResized(e) {
       if(this.$vssWidth > 1280) {
         this.playersOpen = false;
         this.chatOpen = false;
+      }
+      this.recalculateViewport();
+    },
+    onBackButton() {
+      if(this.playersOpen || this.chatOpen) {
+        this.playersOpen = false;
+        this.chatOpen = false;
+        return false;
+      } else {
+        navigator.app.exitApp();
       }
     },
     leaveRoom() {
@@ -135,7 +153,7 @@ export default {
     player: function() { return this.room.players.find((player) => player.id == this.$socket.id)},
     board: function() { return this.room.board ?? [] },
     tabHidden: function() { 
-      return this.$vssWidth < 1280 ? 'fixed tab h-screen top-0 ' + (this.$vssWidth < 640 ? 'w-full' : '') : '';
+      return this.$vssWidth < 1280 ? 'fixed tab h-screen-fixed top-0 ' + (this.$vssWidth < 640 ? 'w-full' : '') : '';
     },
     tabPlayersLogic: function() {
       if(!this.playersOpen) {
@@ -171,6 +189,11 @@ export default {
 </script>
 
 <style scoped>
+
+  .h-screen-fixed {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
 
   .tab {
     transition: left 0.3s ease-in-out, right 0.3s ease-in-out, top 0.3s ease-in-out;

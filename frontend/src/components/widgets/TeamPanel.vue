@@ -1,5 +1,5 @@
 <template>
-  <div :class="['rounded-lg w-full mb-4', 'bg-team-' + team]">
+  <div :class="['rounded-lg w-full mb-4', bgColor]">
     <h2 class="w-full font-header text-white text-lg flex justify-between items-center px-4 pb-0 py-2 pr-2">
       <span>{{ header }}</span>
       <Team-panel-button v-if="player.team != team" @on-click="joinTeam(team)" :team="team" label="Join" icon="fa-plus" />
@@ -40,6 +40,19 @@ export default {
     },
     setSpymaster(spymaster) {
       this.$emit('set-spymaster', spymaster);
+    }
+  },
+  computed: {
+    bgColor: function() {
+      if(this.team == 'red') {
+        return 'bg-team-red'; 
+      }
+      if(this.team == 'blue') {
+        return 'bg-team-blue'; 
+      }
+      if(this.team == 'spectator') {
+        return 'bg-team-spectator'; 
+      }
     }
   },
   props: {

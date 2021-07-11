@@ -25,7 +25,7 @@
           </div>
           <div v-else class="text-sm">
             <p class="p-3 py-2 text-gray-200 tracking-wider flex items-start">
-              <strong :class="`text-white flex-shrink-0 px-1.5 py-0.5 rounded-md truncate bg-team-${msg.sender.team}`">{{ msg.sender.name }}</strong>
+              <strong :class="`text-white flex-shrink-0 px-1.5 py-0.5 rounded-md truncate ${bgColor(msg.sender.team)}`">{{ msg.sender.name }}</strong>
               <span class="ml-3 mt-0.5 text-white break-words">{{ msg.content }}</span>
             </p>
           </div>
@@ -81,6 +81,17 @@ export default {
     toggleChatTab() {
       this.$emit('toggle-chat-tab');
       this.showActivityBadge = false;
+    },
+    bgColor: function(team) {
+      if(team == 'red') {
+        return 'bg-team-red'; 
+      }
+      if(team == 'blue') {
+        return 'bg-team-blue'; 
+      }
+      if(team == 'spectator') {
+        return 'bg-team-spectator'; 
+      }
     }
   },
   computed: {

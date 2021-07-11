@@ -10,15 +10,8 @@
         <Team-panel header="Spectators" :players="playersSpectator" @join-team="joinTeam" :player="player"/>
       </div>
     </div>
-    <div :class="['bg-main-300 rounded-r-lg font-header text-white text-2xl p-4 w-16 flex flex-col justify-between', clickable]" @click="togglePlayersTab()">
-      <i class="fas fa-user-friends w-8 mt-1 relative">
-        <transition name="fade">
-          <span class="flex h-4 w-4 absolute -bottom-2 -right-2 sm:hidden" v-show="showActivityBadge">
-            <span class="absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-50 -m-0.5" :class="[badgeAnimation ? 'animate-ping' : 'hidden']"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-          </span>
-        </transition>
-      </i>      
+    <div :class="['bg-main-300 sm:rounded-r-lg font-header text-white text-2xl p-4 w-16 flex flex-col justify-between', clickable]" @click="togglePlayersTab()">
+      <Panel-icon icon="fa-user-friends" margin="mt-1" :showBadge="showPlayersBadge" :isTabOpen="isPlayersOpen" @set-badge="setPlayersBadge" />  
       <i class="fas fa-times w-8 sm:hidden text-center mb-1"></i>
     </div>
   </div>
@@ -26,17 +19,13 @@
 
 <script>
 import TeamPanel from './TeamPanel.vue';
+import PanelIcon from './../layout/PanelIcon.vue';
 
 export default {
   name: 'Players',
   components: {
-    TeamPanel
-  },
-  data() {
-    return {
-      showActivityBadge: false,
-      badgeAnimation: false
-    };
+    TeamPanel,
+    PanelIcon
   },
   methods: {
     playersFilter(team) {
@@ -50,17 +39,10 @@ export default {
     },
     togglePlayersTab() {
       this.$emit('toggle-players-tab');
-      this.showActivityBadge = false;
-    }
-  },
-  sockets: {
-    playersChange: function() {
-      if(!this.isOpen) {
-        this.showActivityBadge = true;
-        this.badgeAnimation = true;
-        setTimeout(() => { this.badgeAnimation = false }, 1000);
-      }
-    }
+    },
+    setPlayersBadge(value) {
+      this.$emit('set-players-badge', value);
+    },
   },
   computed: {
     playersRed: function() { return this.playersFilter('red') },
@@ -77,11 +59,15 @@ export default {
       type: Object,
       required: true
     },
-    isOpen: {
+    showPlayersBadge: {
+      type: Boolean,
+      required: true
+    },
+    isPlayersOpen: {
       type: Boolean,
       required: true
     }
   },
-  emits: ['toggle-players-tab']
+  emits: ['toggle-players-tab', 'set-players-badge']
 }
 </script>

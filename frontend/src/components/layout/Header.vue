@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header class="p-4 pb-0 sm:p-0">
     <Popup
       v-show="invitePopupOpen"
       title="Invite players"
@@ -16,10 +16,10 @@
         </CopyToClipboard>
       </div>
     </Popup>
-    <div class="w-full px-6 pt-4 pb-10 rounded-b-lg bg-main-100">
+    <div class="w-full px-6 pt-4 pb-10 rounded-lg sm:rounded-t-none bg-main-100">
       <div class="flex flex-row justify-between items-center mb-2">
         <h1 class="text-4xl sm:text-5xl font-header w-full text-white">
-          <img :src="`${publicPath}logo.png`" class="w-10 h-10 mr-2 inline-block"> CodeNames
+          <img :src="`${publicPath}logo.png`" class="w-10 h-10 mr-2 hidden sm:inline-block"> CodeNames
         </h1>
         <div class="relative">
           <button v-on:click="settingsOpen = !settingsOpen" class="focus:outline-none rounded-lg bg-main-300 hover:bg-main-200 text-white text-2xl w-12 h-12 flex items-center justify-center">

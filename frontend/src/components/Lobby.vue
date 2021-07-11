@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center items-start sm:items-center h-screen w-screen">
-    <div class="px-8 py-6 rounded-lg m-4 bg-main-100 w-full sm:max-w-2xl">
+  <div class="flex justify-center items-start sm:items-center h-screen w-screen p-4">
+    <div class="px-8 py-6 rounded-lg bg-main-100 w-full sm:max-w-2xl mb-4">
       <div class="flex flex-row justify-between items-center mb-4">
         <h1 class="text-4xl sm:text-5xl font-header w-full text-white">
           <img :src="`${publicPath}logo.png`" class="w-10 h-10 mr-2 inline-block"> CodeNames
@@ -661,16 +661,25 @@ export default {
     validateRoomCode() {
       return this.roomCodeError = this.roomCode.length != 8;
     },
+    scrollToTop() {
+      window.scrollTo({
+        top: 0, 
+        left: 0, 
+        behavior: 'smooth'
+      });
+    },
     joinRoom() {
       this.validateRoomCode();
       if(!this.validateName() && !this.validateRoomCode()) {
         this.$emit('join-room', { name: this.name, roomCode: this.roomCode });
+        this.scrollToTop();
       }
     },
     createRoom() {
       this.roomCodeError = false;
       if(!this.validateName()) {
         this.$emit('create-room', { name: this.name });
+        this.scrollToTop();
       }
     }
   },

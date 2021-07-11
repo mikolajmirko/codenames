@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-main-300 relative rounded-lg w-full mt-2" style="min-height: 33rem">
+  <div class="bg-main-300 relative p-2 sm:p-0 sm:rounded-lg w-full mt-2" style="min-height: 33rem">
     <div id="gameBoard">
       <sequential-entrance delay="100" tag="div">
         <Game-card v-for="card in board" :key="card.id" :card="card" :isRevealed="isRevealed" :canBeFlipped="canBeFlipped" @card-flipped="cardFlipped(card, ...arguments)"/>

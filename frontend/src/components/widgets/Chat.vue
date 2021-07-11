@@ -1,14 +1,7 @@
 <template>
   <div class="flex sm:my-6 w-full min-max-tab h-full sm:h-auto">
-    <div :class="['bg-main-300 rounded-l-lg font-header text-white text-2xl p-4 w-16 flex flex-col justify-between', clickable]" @click="toggleChatTab()">
-      <i class="fas fa-comment-alt ml-1 mt-1 w-8 relative">
-        <transition name="fade">
-          <span class="flex h-4 w-4 absolute -bottom-2 -right-2 mr-1 sm:hidden" v-show="showActivityBadge">
-            <span class="absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-50 -m-0.5" :class="[badgeAnimation ? 'animate-ping' : 'hidden']"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-          </span>
-        </transition>
-      </i>
+    <div :class="['bg-main-300 sm:rounded-l-lg font-header text-white text-2xl p-4 w-16 flex flex-col justify-between', clickable]" @click="toggleChatTab()">
+      <Panel-icon icon="fa-comment-alt" margin="ml-1 mt-1" :showBadge="showChatBadge" :isTabOpen="isChatOpen" @set-badge="setChatBadge" />
       <i class="fas fa-times w-8 sm:hidden text-center mb-1"></i>
     </div>
     <div class="bg-main-100 w-full sm:w-80 xl:w-full flex flex-col">
@@ -42,25 +35,23 @@
 </template>
 
 <script>
+import PanelIcon from '../layout/PanelIcon.vue';
+
 export default {
   name: 'Chat',
+  components: {
+    PanelIcon
+  },
   data() {
     return {
       chatMessage: '',
-      chatMessages: [],
-      showActivityBadge: false,
-      badgeAnimation: false
+      chatMessages: []
     }
   },
   sockets: {
     chatMessage: function(data) {
       this.chatMessages.push(data);
       this.scrollChat();
-      if(!this.isOpen) {
-        this.showActivityBadge = true;
-        this.badgeAnimation = true;
-        setTimeout(() => { this.badgeAnimation = false }, 1000);
-      }
     }
   },
   methods: {
@@ -80,7 +71,9 @@ export default {
     },
     toggleChatTab() {
       this.$emit('toggle-chat-tab');
-      this.showActivityBadge = false;
+    },
+    setChatBadge(value) {
+      this.$emit('set-chat-badge', value);
     },
     bgColor: function(team) {
       if(team == 'red') {
@@ -106,12 +99,16 @@ export default {
       type: Object,
       required: true
     },
-    isOpen: {
+    showChatBadge: {
+      type: Boolean,
+      required: true
+    },
+    isChatOpen: {
       type: Boolean,
       required: true
     }
   },
-  emits: ['toggle-chat-tab']
+  emits: ['toggle-chat-tab', 'set-chat-badge']
 }
 </script>
 

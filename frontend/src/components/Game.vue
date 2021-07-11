@@ -2,15 +2,51 @@
   <div>
     <div class="xl:flex">
       <div :class="['xl:w-1/4 xl:flex-shrink-0', tabHidden, tabPlayersLogic]">
-        <Players :room="room" :player="player" :isOpen="playersOpen" @toggle-players-tab="openPlayersTab()"/>
+        <Players
+          :room="room"
+          :player="player"
+          :showPlayersBadge="playersBadge"
+          :isPlayersOpen="playersOpen"
+          @set-players-badge="setPlayersBadge"
+          @toggle-players-tab="openPlayersTab()"
+        />
       </div>
-      <div :class="['xl:flex-grow xl:px-6 sm:px-20 px-6']">
-        <Header :room="room" :player="player" :cardsRed="cardCountDisplay('red')" :cardsBlue="cardCountDisplay('blue')" @leave-room="leaveRoom" />
-        <Game-board :board="board" :player="player" @card-flipped="cardFlipped" :gameover="room.gameover" :loading="room.loading" />
+      <div :class="['xl:flex-grow xl:px-6 sm:px-20']">
+        <Header
+          :room="room"
+          :player="player"
+          :cardsRed="cardCountDisplay('red')"
+          :cardsBlue="cardCountDisplay('blue')"
+          @leave-room="leaveRoom"
+        />
+        <Mobile-buttons 
+          :showPlayersBadge="playersBadge"
+          :showChatBadge="chatBadge"
+          :isPlayersOpen="playersOpen"
+          :isChatOpen="chatOpen"
+          @set-players-badge="setPlayersBadge"
+          @set-chat-badge="setChatBadge"
+          @toggle-players-tab="openPlayersTab()"
+          @toggle-chat-tab="openChatTab()"
+        />
+        <Game-board
+          :board="board"
+          :player="player"
+          @card-flipped="cardFlipped"
+          :gameover="room.gameover"
+          :loading="room.loading"
+        />
         <Footer />
       </div>
       <div :class="['xl:w-1/4 xl:flex-shrink-0', tabHidden, tabChatLogic]">
-        <Chat :room="room" :player="player" :isOpen="chatOpen" @toggle-chat-tab="openChatTab()"/>
+        <Chat
+          :room="room"
+          :player="player"
+          :showChatBadge="chatBadge"
+          :isChatOpen="chatOpen"
+          @set-chat-badge="setChatBadge"
+          @toggle-chat-tab="openChatTab()"
+        />
       </div>
     </div>
     <transition name="fade">
@@ -27,6 +63,7 @@
 import Header from './layout/Header.vue';
 import Footer from './layout/Footer.vue';
 import Players from './widgets/Players.vue';
+import MobileButtons from './widgets/MobileButtons.vue';
 import GameBoard from './widgets/GameBoard.vue';
 import Chat from './widgets/Chat.vue';
 
@@ -36,13 +73,16 @@ export default {
     Header,
     Footer,
     Players,
+    MobileButtons,
     GameBoard,
     Chat
   },
   data() {
     return {
       playersOpen: false,
-      chatOpen: false
+      playersBadge: false,
+      chatOpen: false,
+      chatBadge: false
     };
   },
   created() {
@@ -53,8 +93,10 @@ export default {
   },
   methods: {
     windowResized(e) {
-      this.playersOpen = false;
-      this.chatOpen = false;
+      if(this.$vssWidth > 1280) {
+        this.playersOpen = false;
+        this.chatOpen = false;
+      }
     },
     leaveRoom() {
       this.$emit('leave-room', { name: this.name, roomCode: this.room.code });
@@ -72,42 +114,50 @@ export default {
       if(this.$vssWidth < 1280) {
         this.chatOpen = false;
         this.playersOpen = !this.playersOpen;
+        this.playersBadge = false;
       }
     },
     openChatTab() {
       if(this.$vssWidth < 1280) {
         this.playersOpen = false;
         this.chatOpen = !this.chatOpen;
+        this.chatBadge = false;
       }
+    },
+    setPlayersBadge(value) {
+      this.playersBadge = value;
+    },
+    setChatBadge(value) {
+      this.chatBadge = value;
     }
   },
   computed: {
     player: function() { return this.room.players.find((player) => player.id == this.$socket.id)},
     board: function() { return this.room.board ?? [] },
     tabHidden: function() { 
-      return this.$vssWidth < 1280 ? 'fixed tab h-screen ' + (this.$vssWidth < 640 ? 'w-full' : '') : '';
+      return this.$vssWidth < 1280 ? 'fixed tab h-screen top-0 ' + (this.$vssWidth < 640 ? 'w-full' : '') : '';
     },
     tabPlayersLogic: function() {
       if(!this.playersOpen) {
         if(this.$vssWidth < 640)
-          return 'left-tab-full bottom-tab';
+          return 'left-tab-full';
         if(this.$vssWidth < 1280)
-          return 'left-tab top-0';
+          return 'left-tab';
       } else {
         if(this.$vssWidth < 1280)
-          return 'left-0 top-0 z-60';
+          return 'left-0 z-60';
       }
       return '';
     },
     tabChatLogic: function() {
       if(!this.chatOpen) {
         if(this.$vssWidth < 640)
-          return 'right-tab-full bottom-tab';
+          return 'right-tab-full';
         if(this.$vssWidth < 1280)
-          return 'right-tab top-0';
+          return 'right-tab';
       } else {
         if(this.$vssWidth < 1280)
-          return 'right-0 top-0 z-60';
+          return 'right-0 z-60';
       }
       return '';
     },
@@ -121,27 +171,27 @@ export default {
 </script>
 
 <style scoped>
-.tab {
-  transition: left 0.3s ease-in-out, right 0.3s ease-in-out, top 0.3s ease-in-out;
-  min-width: 24rem;
-  z-index: 55;
-}
-.z-60 {
-  z-index: 60;
-}
-.left-tab {
-  left: -20rem;
-}
-.left-tab-full {
-  left: calc(-100vw + 5rem);
-}
-.bottom-tab {
-  top: calc(100vh - 4rem);
-}
-.right-tab {
-  right: -20rem;
-}
-.right-tab-full {
-  right: calc(-100vw + 5rem);
-}
+
+  .tab {
+    transition: left 0.3s ease-in-out, right 0.3s ease-in-out, top 0.3s ease-in-out;
+    min-width: 24rem;
+    z-index: 55;
+  }
+  
+  .left-tab {
+    left: -20rem;
+  }
+
+  .left-tab-full {
+    left: -100vw;
+  }
+
+  .right-tab {
+    right: -20rem;
+  }
+
+  .right-tab-full {
+    right: -100vw;
+  }
+
 </style>

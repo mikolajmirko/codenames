@@ -10,7 +10,7 @@ import VueScreenSize from 'vue-screen-size';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './index.css';
 
-const socketConnection = SocketIO('http://localhost:3000');
+const socketConnection = SocketIO('https://fathomless-citadel-13208.herokuapp.com/');
 Vue.use(new VueSocketIO({
   debug: true,
   connection: socketConnection

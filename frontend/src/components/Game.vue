@@ -206,7 +206,7 @@ export default {
   }
 
   .left-tab-full {
-    left: -100vw;
+    left: -100%;
   }
 
   .right-tab {

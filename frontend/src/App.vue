@@ -80,6 +80,7 @@ export default {
   body {
     background-color: #202137;
     overflow-x: hidden;
+    overscroll-behavior: contain;
   }
 
 </style>
